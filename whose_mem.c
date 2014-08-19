@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,14 +91,64 @@ static int get_percent_free(unsigned int* level)
     return error;
 }
 
-int main(void)
+void usage()
 {
-    unsigned int percent_free;
-    unsigned int pressure_level;
+    printf("utsl... HAHAHA YOU'VE BEEN SUFFIELDED\n");
+}
 
-    get_percent_free(&percent_free);
-    get_pressure_level(&pressure_level);
-    printf("100-minus-total-vs-free-estimate: %f, memory free percentage: %d, pressure level: %d\n",
-            100-total_minus_free_over_total(), percent_free, pressure_level*20);
+int main(int argc, char **argv)
+{
+    int mode_help = 0;
+    int mode_fields = 0;
+    int mode_continuous = 0;
+    int mode_data = 1;
+    int sleep_between_samples = 1;
+
+    int c;
+
+    while ((c = getopt(argc, argv, "hfcds:")) != -1) {
+        switch (c) {
+            case 'h':
+                mode_help = 1;
+                break;
+            case 'f':
+                mode_fields = 1;
+                break;
+            case 'c':
+                mode_continuous =1;
+                break;
+            case 'd':
+                mode_data = 1;
+                break;
+            case 's':
+                sleep_between_samples = atoi(optarg);
+                break;
+            default:
+                usage();
+                abort();
+                break;
+        }
+    }
+
+    if (mode_help) {
+        usage();
+        return 0;
+    } else if (mode_fields) {
+        printf("100-minus-total-vs-free-estimate, memory free percentage, pressure level\n");
+        return 0;
+    } else {
+        assert(mode_data && "mode_data should not be false here");
+        do {
+            unsigned int percent_free;
+            unsigned int pressure_level;
+
+            get_percent_free(&percent_free);
+            get_pressure_level(&pressure_level);
+            printf("%f, %d, %d\n",
+                    100-total_minus_free_over_total(), percent_free, pressure_level*20);
+            sleep((mode_continuous%2) * sleep_between_samples);
+        } while (mode_continuous);
+    }
+    return 0;
 }
 
