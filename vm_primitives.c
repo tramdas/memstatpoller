@@ -1,8 +1,8 @@
 #include "vm_primitives.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <mach/mach_host.h>
 
 /*
