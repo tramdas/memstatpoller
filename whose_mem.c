@@ -9,7 +9,6 @@
 #include <sys/sysctl.h>
 #include <sys/kern_memorystatus.h>
 
-
 /*
  * This is what the vm_statistics structure looks like in xnu-2422.1.72 :
  */
@@ -48,6 +47,9 @@
 //	uint64_t	total_uncompressed_pages_in_compressor; /* # of pages (uncompressed) held within the compressor. */
 //} __attribute__((aligned(8)));
 
+#define debug_print(fmt, ...) \
+            do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+
 static unsigned int read_sysctl_int(const char* name)
 {
     unsigned int var;
@@ -84,19 +86,29 @@ static unsigned long long getPhysMemoryBytes()
     return physical_memory;
 }
 
+static unsigned int pagesize()
+{
+    //memoize, bitch.
+    static unsigned int pagesize = 0;
+    if (!pagesize) {
+        int mib[6];
+        mib[0] = CTL_HW;
+        mib[1] = HW_PAGESIZE;
+
+        debug_print("Reading pagesize from sysctl\n", errno);
+        size_t length;
+        length = sizeof(pagesize);
+        if (sysctl(mib, 2, &pagesize, &length, NULL, 0) < 0) {
+            pagesize = 0;
+            printf("Failed to get memory usage: %d", errno);
+            exit(-1);
+        }
+    }
+    return pagesize;
+}
+
 static double total_minus_free_over_total()
 {
-    int mib[6];
-    mib[0] = CTL_HW;
-    mib[1] = HW_PAGESIZE;
-
-    unsigned int pagesize = 0;
-    size_t length;
-    length = sizeof(pagesize);
-    if (sysctl(mib, 2, &pagesize, &length, NULL, 0) < 0) {
-        printf("Failed to get memory usage: %d", errno);
-        exit(-1);
-    }
 
     mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
 
@@ -109,7 +121,7 @@ static double total_minus_free_over_total()
     unsigned long long free_count = vmstat.free_count;
     unsigned long long inactive_count = vmstat.inactive_count;
 
-    unsigned long long bytesFree = (free_count + inactive_count) * pagesize;
+    unsigned long long bytesFree = (free_count + inactive_count) * pagesize();
     unsigned long long bytesTotal = getPhysMemoryBytes();
 
     double used = (double)(bytesTotal - bytesFree) / (double)bytesTotal;

@@ -1,11 +1,19 @@
 CC = gcc
 OBJ = whose_mem.o
-CFLAGS = -O2 -Wall -Werror
+CFLAGS += -O2 -Wall -Werror
+
+all: nodebug
+
+nodebug : CFLAGS += -D DEBUG=0
+
+debug : CFLAGS += -D DEBUG=1
+
+nodebug: whose_mem
+
+debug: whose_mem
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-all: whose_mem
+	$(CC) -c -o $@ $< $(CFLAGS) $(DEBUGFLAGS)
 
 whose_mem: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
