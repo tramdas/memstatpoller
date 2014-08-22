@@ -59,7 +59,7 @@ static vm_statistics64_data_t _get_vmstat()
     vm_statistics64_data_t vmstat;
     int ret = get_vmstat(&vmstat);
     if (ret) {
-        VMSTAT_FAIL_WARN(ret);
+        VMSTAT_FAIL_DIE(ret);
     }
     return vmstat;
 }
