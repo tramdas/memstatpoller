@@ -140,7 +140,32 @@ int main(int argc, char **argv)
         usage();
         return 0;
     } else if (mode_fields) {
-        printf("100-minus-total-vs-free-estimate, memory free percentage, pressure level\n");
+        printf( "vmstat_free_count, "
+                "vmstat_inactive_count, "
+                "vmstat_wire_count, "
+                "vmstat_zero_fill_count, "
+                "vmstat_reactivations, "
+                "vmstat_pageins, "
+                "vmstat_pageouts, "
+                "vmstat_faults, "
+                "vmstat_cow_faults, "
+                "vmstat_lookups, "
+                "vmstat_hits, "
+                "vmstat_purges, "
+                "vmstat_purgable_count, "
+                "vmstat_speculative_count, "
+                "vmstat_decompressions, "
+                "vmstat_compressions, "
+                "vmstat_swapins, "
+                "vmstat_swapouts, "
+                "vmstat_compressor_page_count, "
+                "vmstat_throttled_count, "
+                "vmstat_external_page_count, "
+                "vmstat_internal_page_count, "
+                "vmstat_total_uncompressed_pages_in_compressor, "
+                "100-minus-total-vs-free-estimate, "
+                "memory free percentage, "
+                "pressure level\n");
         return 0;
     } else {
         assert(mode_data && "mode_data should not be false here");
@@ -150,8 +175,34 @@ int main(int argc, char **argv)
 
             get_percent_free(&percent_free);
             get_pressure_level(&pressure_level);
-            printf("%f, %d, %d\n",
-                    100-total_minus_free_over_total(), percent_free, pressure_level*20);
+            printf( "%llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %u, %u, %u, %u, %llu, %f, %d, %d\n",
+                    vmstat_free_count(),
+                    vmstat_inactive_count(),
+                    vmstat_wire_count(),
+                    vmstat_zero_fill_count(),
+                    vmstat_reactivations(),
+                    vmstat_pageins(),
+                    vmstat_pageouts(),
+                    vmstat_faults(),
+                    vmstat_cow_faults(),
+                    vmstat_lookups(),
+                    vmstat_hits(),
+                    vmstat_purges(),
+                    vmstat_purgable_count(),
+                    vmstat_speculative_count(),
+                    vmstat_decompressions(),
+                    vmstat_compressions(),
+                    vmstat_swapins(),
+                    vmstat_swapouts(),
+                    vmstat_compressor_page_count(),
+                    vmstat_throttled_count(),
+                    vmstat_external_page_count(),
+                    vmstat_internal_page_count(),
+                    vmstat_total_uncompressed_pages_in_compressor(),
+                    100-total_minus_free_over_total(),
+                    percent_free,
+                    pressure_level*20
+                    );
             sleep((mode_continuous%2) * sleep_between_samples);
         } while (mode_continuous);
     }
