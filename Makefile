@@ -1,5 +1,5 @@
 CC = gcc
-OBJ = whose_mem.o
+OBJ = whose_mem.o vm_primitives.o
 CFLAGS += -O2 -Wall -Werror
 
 all: nodebug
