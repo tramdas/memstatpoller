@@ -8,7 +8,8 @@
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include <sys/kern_memorystatus.h>
+//#include <sys/kern_memorystatus.h>
+#include <sys/syscall.h>
 
 #define debug_print(fmt, ...) \
             do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
@@ -88,7 +89,9 @@ static int get_percent_free(unsigned int* level)
     int error;
 
     // This is how AAPL's memory_pressure tool reports "System-wide memory free percentage":
-    error = memorystatus_get_level((user_addr_t) level);
+    //error = memorystatus_get_level((user_addr_t) level);
+    error = syscall(SYS_memorystatus_get_level, level);
+    debug_print("made syscall for memorystatus_get_level; error=%d, result=%d\n", error, *level);
 
     if( error ) {
         printf("memorystatus_get_level failed:");
