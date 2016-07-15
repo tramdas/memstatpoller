@@ -12,7 +12,7 @@
 #include <sys/syscall.h>
 
 #define debug_print(fmt, ...) \
-            do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+            do { if (DEBUG) fprintf(stderr, "#"fmt, __VA_ARGS__); } while (0)
 
 static unsigned int read_sysctl_int(const char* name)
 {
