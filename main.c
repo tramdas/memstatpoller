@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #include <sys/types.h>
@@ -143,7 +144,8 @@ int main(int argc, char **argv)
         usage();
         return 0;
     } else if (mode_fields) {
-        printf( "vmstat_free_count, "
+        printf( "epoch_s, "
+                "vmstat_free_count, "
                 "vmstat_inactive_count, "
                 "vmstat_wire_count, "
                 "vmstat_zero_fill_count, "
@@ -178,7 +180,8 @@ int main(int argc, char **argv)
 
             get_percent_free(&percent_free);
             get_pressure_level(&pressure_level);
-            printf( "%llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %u, %u, %u, %u, %llu, %f, %d, %d\n",
+            printf( "%ld, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %llu, %u, %u, %u, %u, %llu, %f, %d, %d\n",
+                    time(NULL),
                     vmstat_free_count(),
                     vmstat_inactive_count(),
                     vmstat_wire_count(),
